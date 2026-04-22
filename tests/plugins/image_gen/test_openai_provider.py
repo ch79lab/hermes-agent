@@ -100,10 +100,11 @@ class TestGenerate:
         assert saved.parent == tmp_path / "cache" / "images"
         assert saved.read_bytes() == png_bytes
 
-        # Request payload: landscape → 1536x1024, response_format=b64_json
+        # Request payload: landscape → 1536x1024. gpt-image-* returns b64
+        # unconditionally and rejects response_format, so we don't send it.
         call_kwargs = fake_client.images.generate.call_args.kwargs
         assert call_kwargs["size"] == "1536x1024"
-        assert call_kwargs["response_format"] == "b64_json"
+        assert "response_format" not in call_kwargs
         assert call_kwargs["model"] == "gpt-image-1.5"
 
     def test_dalle3_url_passthrough(self, provider, tmp_path, monkeypatch):

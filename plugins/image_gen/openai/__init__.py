@@ -260,9 +260,9 @@ class OpenAIImageGenProvider(ImageGenProvider):
             openai_cfg = {}
 
         if family == "gpt_image":
-            # gpt-image-* returns b64_json by default (no explicit field needed),
-            # but we set it so downstream is predictable.
-            payload["response_format"] = "b64_json"
+            # gpt-image-* returns b64_json unconditionally and REJECTS
+            # ``response_format`` as an unknown parameter (verified live
+            # April 2026: 400 invalid_request_error). Don't send it.
             quality = openai_cfg.get("quality") or meta.get("default_quality")
             if quality and quality != "auto":
                 payload["quality"] = quality
